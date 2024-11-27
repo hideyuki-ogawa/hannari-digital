@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>はんなりデジタル教室のウェブサイト</title>
+        <style>
+            body {
+                background-color: white;
+                color: black;
+            }
+        </style>
+    </head>
+    <body onclick="changeBackgroundColor()">
+        <h1>はんなりデジタル教室のサイト</h1>
+        <h2>無料体験講座実施中です！</h2>
+        <p>プログラミング入門</p>
+        <script>
+            function changeBackgroundColor() {
+                const body = document.body;
+                const currentColor = body.style.backgroundColor;
+
+                if (currentColor === 'white' || currentColor === '') {
+                    body.style.backgroundColor = 'red';
+                } else if (currentColor === 'red') {
+                    body.style.backgroundColor = 'black';
+                    body.style.color = 'white';
+                } else {
+                    body.style.backgroundColor = 'white';
+                    body.style.color = 'black';
+                }
+            }
+        </script>
+    </body>
+</html>
