@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>キラキラ夜空</title>
+    <style>
+        /* 背景を夜空に設定 */
+        body {
+            background-color: #000033; /* 深い青色で夜空を表現 */
+        }
+
+        /* 白い星のスタイル */
+        #star1 {
+            background-color: white; /* 星の色は白 */
+            height: 10px; /* 星の高さ */
+            width: 10px; /* 星の幅 */
+            border-radius: 50%; /* 丸い形にする */
+            position: absolute; /* 絶対位置で配置 */
+            top: 100px; /* ページ上部から100pxの位置 */
+            left: 100px; /* ページ左から100pxの位置 */
+        }
+
+        /* 白い雲のスタイル */
+        #cloud1 {
+            background-color: white; /* 雲の色は白 */
+            height: 50px; /* 雲の高さ */
+            width: 100px; /* 雲の幅 */
+            border-radius: 50%; /* 丸みを帯びた形状 */
+            position: absolute; /* 絶対位置で配置 */
+            top: 50px; /* ページ上部から50pxの位置 */
+            left: 150px; /* ページ左から150pxの位置 */
+            opacity: 0.7; /* 半透明に設定 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 星 -->
+    <div id="star1"></div>
+
+    <!-- 雲 -->
+    <div id="cloud1"></div>
+</body>
+</html>
+
+<!--
+解説 
+
+    1. HTML構造
+    <!DOCTYPE html>: HTML5ドキュメントであることを宣言。
+    <head> タグ:
+    ページのタイトルを キラキラ夜空 に設定。
+    CSSスタイルで夜空、星、雲の見た目を定義。
+    <body> タグ:
+    星と雲を表現する div タグを追加。
+
+    2. CSSの説明
+    背景の設定 (body):
+
+    background-color: #000033;: 深い青色で夜空を再現。
+    星のスタイル (#star1):
+
+    background-color: white;: 白色で星を表現。
+    height と width: 星のサイズを 10px × 10px に設定。
+    border-radius: 50%;: 星を丸い形にする。
+    position: absolute;: 絶対位置指定で配置。
+    top: 100px; と left: 100px;: ページ内の具体的な配置場所。
+    雲のスタイル (#cloud1):
+
+    background-color: white;: 白色で雲を表現。
+    height と width: 雲のサイズを 50px × 100px に設定。
+    border-radius: 50%;: 丸みを帯びた形状。
+    position: absolute;: 絶対位置指定で配置。
+    top: 50px; と left: 150px;: ページ内の具体的な配置場所。
+    opacity: 0.7;: 半透明に設定して雲らしい質感を再現。
+
+    3. 見た目の結果
+    星 (#star1): ページの左上（100px, 100px）に小さな白い点が表示される。
+    雲 (#cloud1): 星の右下（150px, 50px）に楕円形の白い雲が表示される。
+
+-->
