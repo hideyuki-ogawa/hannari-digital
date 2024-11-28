@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>キラキラ夜空</title>
+    <style>
+        /* 夜空全体の背景スタイル */
+        #nightSky {
+            background-color: #000033; /* 濃い青で夜空を表現 */
+            width: 100%;
+            height: 500px;
+            overflow: hidden; /* 子要素がはみ出さないようにする */
+        }
+
+        /* 夜空に配置する星の基本スタイル */
+        .star {
+            background-color: white; /* 白い星 */
+            border-radius: 50%; /* 星を丸くする */
+            position: absolute; /* 夜空内のランダムな位置に配置 */
+        }
+
+        /* 月のスタイル */
+        #moon {
+            width: 50px;
+            height: 50px;
+            background-color: #FFFFCC; /* 薄い黄色で月を表現 */
+            border-radius: 50%; /* 丸い形にする */
+            position: absolute;
+            top: 20%; /* 夜空の上部に配置 */
+            left: 70%; /* 夜空の右側に配置 */
+        }
+
+        /* 雲のスタイル */
+        .cloud {
+            width: 100px;
+            height: 50px;
+            background-color: #FFFFFF; /* 白い雲 */
+            border-radius: 50%; /* 丸みを帯びた形にする */
+            position: absolute;
+            opacity: 0.7; /* 半透明にする */
+        }
+    </style>
+</head>
+<body>
+    <!-- 夜空のコンテナ -->
+    <div id="nightSky">
+        <!-- 月 -->
+        <div id="moon"></div>
+    </div>
+
+    <script>
+        // ランダムな位置に星を生成する関数
+        function createStar() {
+            const star = document.createElement('div'); // 星を表すdiv要素を作成
+            star.classList.add('star'); // 'star'クラスを追加
+
+            const size = Math.random() * 5 + 2; // 星のサイズをランダムに決定（2～7px）
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+
+            const x = Math.random() * 100; // 横位置をランダムに決定（0～100%）
+            const y = Math.random() * 100; // 縦位置をランダムに決定（0～100%）
+            star.style.left = `${x}%`;
+            star.style.top = `${y}%`;
+
+            document.getElementById('nightSky').appendChild(star); // 夜空に星を追加
+        }
+
+        // 星を100個生成
+        for (let i = 0; i < 100; i++) {
+            createStar();
+        }
+
+        // 雲を生成する関数
+        function createCloud() {
+            const cloud = document.createElement('div'); // 雲を表すdiv要素を作成
+            cloud.classList.add('cloud'); // 'cloud'クラスを追加
+
+            const x = Math.random() * 100; // 横位置をランダムに決定（0～100%）
+            const y = Math.random() * 50; // 縦位置をランダムに決定（上部に配置）
+            cloud.style.left = `${x}%`;
+            cloud.style.top = `${y}%`;
+
+            document.getElementById('nightSky').appendChild(cloud); // 夜空に雲を追加
+            return cloud;
+        }
+
+        // 雲をアニメーションさせる関数
+        function animateCloud(cloud) {
+            let left = parseFloat(cloud.style.left); // 雲の現在の位置を取得
+            const speed = Math.random() * 1 + 0.5; // 雲の移動速度（0.5～1.5%）
+            setInterval(() => {
+                left += speed; // 雲を右方向に移動
+                if (left > 100) { // 画面外に出たら左端に戻す
+                    left = -10;
+                }
+                cloud.style.left = `${left}%`; // 新しい位置を更新
+            }, 30); // 30msごとに更新
+        }
+
+        // 雲を3つ生成し、それぞれアニメーションを設定
+        for (let i = 0; i < 3; i++) {
+            const cloud = createCloud();
+            animateCloud(cloud);
+        }
+        // 星の表示・非表示を切り替える関数
+        function toggleStars(showStars) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.style.display = showStars ? 'block' : 'none';
+            });
+        }
+        
+        // 背景色の切り替え
+        const nightSky = document.getElementById('nightSky');
+        const moon = document.getElementById('moon');
+        let isNight = true;
+
+        setInterval(() => {
+            isNight = !isNight;
+            nightSky.style.backgroundColor = isNight ? '#000033' : '#ADD8E6';
+            moon.style.backgroundColor = isNight ? '#FFFFCC' : 'yellow'; // 月の色を変更
+            toggleStars(isNight);
+        }, 3000);
+    </script>
+</body>
+</html>
