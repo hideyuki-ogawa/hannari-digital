@@ -1,5 +1,12 @@
 # index2.htmlの解説
 
+## 各コードのページURL
+
+index1.html: [https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index1.html](https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index1.html)
+index2.html: [https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index2.html](https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index2.html)
+index3.html: [https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index3.html](https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index3.html)
+
+
 ## HTML
 HTML（HyperText Markup Language）は、ウェブページの構造を定義するための言語です。
 
