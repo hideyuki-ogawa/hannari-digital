@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Autumn Leaves</title>
+        <style>
+            .sky {
+                width: 100vw;
+                height: 100vh;
+                background: skyblue;
+                position: relative;
+                }
+            .leaf {
+                position: absolute;
+                width: 80px;
+                height: 50px;
+                background-color: green; /* 葉の色 */
+                border-radius: 50% 0 50% 50% / 60% 0 60% 40%; /* 葉の輪郭 */
+                transform: rotate(45deg); /* 回転 */
+                }
+            @keyframes leaf-animation {
+                from {
+                    transform: translateX(0) translateY(0) scale(1);
+                    opacity: 1;
+                    color: green;
+                }
+                25% {
+                    transform: translateX(-100px) translateY(200px) rotate(180deg);
+                    background-color: yellow;
+                }
+                50% {
+                    transform: translateX(0px) translateY(300px) rotate(360deg);
+                }
+                75% {
+                    transform: translateX(-200px) translateY(400px) rotate(540deg);
+                    background-color: orange;
+                }
+                to {
+                    transform: translateX(300px) translateY(500px) scale(0.5);
+                    opacity: 0.7;
+                    background-color: red;
+                }
+                }
+        </style>
+    </head>
+    <body>
+        <div class="sky" id="autumn-leaves">
+        </div>
+        <script>
+            function createLeaf() {
+                const leaf = document.createElement('div');
+                leaf.classList.add('leaf');
+
+                leaf.style.left = Math.random() * window.innerWidth + 'px';
+                leaf.style.top = 0 + 'px';
+                
+                leaf.style.animation = 'leaf-animation 10s ease-in-out infinite';
+                document.getElementById('autumn-leaves').appendChild(leaf);
+                
+                setTimeout(() => {
+                    leaf.remove();
+                }, 10000);
+                }
+            setInterval(createLeaf, 1000);
+        </script>
+    </body>
+</html>
