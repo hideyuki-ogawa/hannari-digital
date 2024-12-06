@@ -4,7 +4,7 @@
 
 流れ星　URL: https://hideyuki-ogawa.github.io/hannari-digital/shooting-star/shooting-star.html
 
-少しコードを変えた例
+少しコードを変えた例    
 落ち葉 URL: https://hideyuki-ogawa.github.io/hannari-digital/shooting-star/autumn-leaves.html
 
 ## コード

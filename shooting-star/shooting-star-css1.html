@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- スマホでもきれいに見えるための設定 -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>流れ星</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            .sky {
+                width: 1000px;
+                height: 1000px;
+                background-color: blue;
+            }
+            .shooting-star {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top:100px;
+            left:100px;
+            background: white;
+            box-shadow: 0 0 10px white;
+            border-radius: 50%;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="sky">
+            <div class="shooting-star"></div>
+            <div class="moon"></div>
+        </div>
+    </body>
+</html>

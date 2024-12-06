@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- スマホでもきれいに見えるための設定 -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>流れ星</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            .sky {
+                width: 1000px;
+                height: 1000px;
+                background-color: blue;
+            }
+            .star {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top:100px;
+            left:100px;
+            background: white;
+            box-shadow: 0 0 10px white;
+            border-radius: 50%;
+            animation: star-animation 2s linear infinite;
+        }
+        @keyframes star-animation {
+                from {
+                    transform: translateX(0) translateY(0) scale(1);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(200px) translateY(100px) scale(0.5);
+                    opacity: 0;
+                }
+                }
+        </style>
+    </head>
+    <body>
+        <div class="sky">
+            <div class="shooting-star"></div>
+            <div class="moon"></div>
+        </div>
+        <script type="text/javascript">
+            function createShootingStar() {
+                const shootingStar = document.createElement('div');
+                shootingStar.classList.add('star');
+                
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight;
+                
+                shootingStar.style.left = `${startX}px`;
+                shootingStar.style.top = `${startY}px`;
+                
+                document.querySelector('.shooting-star').appendChild(shootingStar);
+    
+                // 流れ星が流れ終わったら削除
+                setTimeout(() => {
+                    shootingStar.remove();
+                }, 10000);
+                }
+            setInterval(createShootingStar, 500);
+        </script>
+    </body>
+</html>
