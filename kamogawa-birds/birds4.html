@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>flying bird</title>
+        <!-- 背景にかもがわの画像を使う-->
+
+        <style>
+            body {
+                background-image: url("img/kyoto-scene.png");
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+            .bird {
+                position: absolute;
+                height: 50px;
+                animation: fly linear infinite;
+                animation-duration: 5s;
+            }
+            @keyframes fly {
+                from {
+                    transform: translateX(100vw);
+                }
+                to {
+                    transform: translateX(-100vw);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <img src="img/bird.gif" class="bird">
+    </body>
+</html>
