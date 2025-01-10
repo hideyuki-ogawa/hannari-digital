@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #87ceeb; /* 空色 */
+  }
+
+  .fish {
+    position: absolute;
+    width: 100px; /* 魚のサイズ */
+    animation: swim infinite linear;
+  }
+  
+  #fish1 {
+    top: 50%; /* 初期位置 */
+    animation-duration: 5s; /* 泳ぐ速さ */
+  }
+  
+  #fish2 {
+    top: 70%;
+    animation-duration: 7s;
+  }
+  
+  @keyframes swim {
+    from {
+      left: 110%; /* 画面外からスタート */
+    }
+    to {
+      left: -10%; /* 画面外に消える */
+    }
+  }
