@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイピング練習アプリ - 10問チャレンジ</title>
+    <style>
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+        }
+        
+        h1 {
+            color: #2b7bb9;
+            margin-top: 0;
+            font-size: 28px;
+        }
+        
+        .level-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+        
+        .level-box {
+            background-color: #e6f3ff;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .progress-container {
+            background-color: #e6f3ff;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background-color: #4dabf7;
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .question-counter {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .phrase-display {
+            font-size: 24px;
+            margin: 30px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .input-area {
+            margin-bottom: 30px;
+        }
+        
+        #typing-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #4dabf7;
+            border-radius: 8px;
+            outline: none;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        
+        #typing-input.correct {
+            border-color: #40c057;
+            background-color: #ebfbee;
+        }
+        
+        #typing-input.incorrect {
+            border-color: #fa5252;
+            background-color: #fff5f5;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background-color: #e7f5ff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1c7ed6;
+            margin-top: 5px;
+        }
+        
+        button {
+            background-color: #4dabf7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #339af0;
+        }
+        
+        button:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+        
+        .result-screen {
+            display: none;
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 32px;
+            color: #2b7bb9;
+            margin-bottom: 20px;
+        }
+        
+        .result-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .result-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+        
+        .restart-btn {
+            margin-top: 20px;
+        }
+        
+        .fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px;
+            animation: explosion 1s ease-out forwards;
+        }
+        
+        @keyframes explosion {
+            0% {
+                transform: scale(0.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>タイピング練習アプリ - 10問チャレンジ</h1>
+        
+        <div class="mode-selector" style="margin-bottom: 20px; text-align: center;">
+            <button id="japanese-mode" class="mode-btn mode-active" style="margin-right: 10px; border-radius: 5px; padding: 8px 15px; background-color: #4dabf7; color: white; border: none; cursor: pointer;">日本語モード</button>
+            <button id="english-mode" class="mode-btn" style="border-radius: 5px; padding: 8px 15px; background-color: #e9ecef; color: #495057; border: none; cursor: pointer;">英語モード</button>
+        </div>
+        
+        <div id="game-screen">
+            <div class="level-indicator">
+                <div class="level-box">現在のレベル: <span id="current-level">初級</span></div>
+                <div class="level-box">残り問題: <span id="remaining-questions">10</span></div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="question-counter">問題 <span id="question-number">1</span> / 10</div>
+            
+            <div class="phrase-display" id="phrase-display">
+                準備ができたら「スタート」ボタンをクリックしてください
+            </div>
+            
+            <div class="translation-display" id="translation-display" style="font-size: 16px; color: #666; margin-bottom: 15px; font-style: italic; min-height: 24px;">
+                
+            </div>
+            
+            <div class="input-area">
+                <input type="text" id="typing-input" placeholder="ここにタイピングしてください" disabled>
+            </div>
+            
+            <div class="button-container" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                <button id="start-btn">スタート</button>
+                <button id="pass-btn" style="background-color: #adb5bd; display: none;">問題をパス</button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    正確度
+                    <div class="stat-value" id="accuracy">0%</div>
+                </div>
+                <div class="stat-box">
+                    入力速度
+                    <div class="stat-value" id="speed">0 文字/分</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="result-screen" class="result-screen">
+            <div class="result-title">チャレンジ完了！</div>
+            <div class="result-message">おめでとうございます！10問チャレンジを完了しました。</div>
+            
+            <div class="result-stats">
+                <div class="stat-box">
+                    平均正確度
+                    <div class="stat-value" id="final-accuracy">0%</div>
+                </div>
+                <div class="stat-box">
+                    平均速度
+                    <div class="stat-value" id="final-speed">0 文字/分</div>
+                </div>
+                <div class="stat-box">
+                    合計時間
+                    <div class="stat-value" id="total-time">0秒</div>
+                </div>
+            </div>
+            
+            <button id="restart-btn" class="restart-btn">もう一度チャレンジ</button>
+        </div>
+    </div>
+    
+    <div class="fireworks-container" id="fireworks-container"></div>
+    
+    <script>
+        // タイピングフレーズデータ
+        const typingPhrases = {
+            japanese: {
+                beginner: [
+                    "あさかぜ",
+                    "たけのこ",
+                    "さしすせそ",
+                    "たちつてと",
+                    "なにぬねの",
+                    "はひふへほ",
+                    "まみむめも",
+                    "やゆよ",
+                    "らりるれろ",
+                    "わをん",
+                    "わたしのなまえ",
+                    "あさのあいさつ",
+                    "たのしいおはなし",
+                    "おいしいたべもの",
+                    "あおいそら",
+                    "あかいはな",
+                    "みどりのはっぱ",
+                    "しろいくも",
+                    "あめがふる",
+                    "かぜがふく"
+                ],
+                intermediate: [
+                    "わたしはがっこうにいきます",
+                    "ともだちとあそびました",
+                    "あさごはんをたべました",
+                    "ほんをよみました",
+                    "えいがをみました",
+                    "おんがくをききました",
+                    "てがみをかきました",
+                    "しゅくだいをしました",
+                    "あさはやくおきました",
+                    "よるおそくねました",
+                    "はるにはさくらがさきます",
+                    "なつにはうみへいきます",
+                    "あきにはもみじがきれいです",
+                    "ふゆにはゆきがふります",
+                    "あめのひはかさをもちます",
+                    "やまにのぼりました",
+                    "かわでおよぎました",
+                    "そらにほしがきらきらひかります",
+                    "にじがでています",
+                    "つきがまるくみえます",
+                    "きょうはがっこうでテストがあります",
+                    "としょかんでほんをかりました",
+                    "きょうしつでべんきょうします",
+                    "たいいくかんでうんどうをします",
+                    "ともだちときょうしつではなしました",
+                    "えんぴつとノートをもっています",
+                    "こくごとさんすうとりかがすきです",
+                    "しゅくだいをわすれました",
+                    "あさのホームルームにでました",
+                    "きゅうしょくをたべました"
+                ],
+                advanced: [
+                    "わたしはピアノをひくのがすきです",
+                    "まいにちえをかいています",
+                    "しゅうまつはサッカーをします",
+                    "コンピューターゲームであそびます",
+                    "としょかんでほんをよみます",
+                    "りょうりをつくるのがたのしいです",
+                    "しゃしんをとるのがすきです",
+                    "おんがくをききながらべんきょうします",
+                    "にわではなをそだてています",
+                    "ダンスのれんしゅうをしています",
+                    "はるにはおはなみにいきます",
+                    "なつにはうみでおよぎます",
+                    "あきにはもみじがりにいきます",
+                    "ふゆにはゆきだるまをつくります",
+                    "たなばたにおりがみでかざりをつくります",
+                    "おしょうがつにおぞうにはいきます",
+                    "クリスマスにプレゼントをもらいました",
+                    "たんじょうびにケーキをたべました",
+                    "うんどうかいではしりました",
+                    "がくげいかいでピアノをひきました"
+                ],
+                expert: [
+                    "きょねんのなつやすみにおきなわへいきました",
+                    "でんしゃとバスにのってとうきょうタワーにいきました",
+                    "ゆうえんちでたのしいいちにちをすごしました",
+                    "ゆきのふるさっぽろをたびしました",
+                    "きょうとのおてらをみにいきました",
+                    "ほっかいどうでおいしいかいせんどんをたべました",
+                    "なごやでとうじきをかいました",
+                    "ひろしまのげんばくドームをけんがくしました",
+                    "ふくおかでめんたいこをかいました",
+                    "おおさかでたこやきをたべました",
+                    "きょうはとてもたのしいいちにちでした",
+                    "あしたがたのしみです",
+                    "ともだちにあえてうれしかったです",
+                    "むずかしいもんだいがとけてよかったです",
+                    "はじめてピアノがひけてかんどうしました",
+                    "わすれものをしてしんぱいしました",
+                    "じぶんのちからでできてほこらしいです",
+                    "ともだちがてつだってくれてかんしゃしています",
+                    "まちがえてしまってざんねんでした",
+                    "はやくげんきになってほしいです",
+                    "しょうらいせんせいになりたいです",
+                    "せかいじゅうをりょこうしてみたいです",
+                    "コンピューターのプログラミングをまなびたいです",
+                    "いしゃになってびょうきのひとをたすけたいです",
+                    "おいしいりょうりをつくれるパティシエになりたいです",
+                    "うちゅうひこうしになってうちゅうにいきたいです",
+                    "かんきょうをまもるしごとをしたいです",
+                    "しゅふをえがくいらすとレーターになりたいです",
+                    "どうぶつをたすけるどうぶつえんではたらきたいです",
+                    "みんなをえがおにできるひとになりたいです"
+                ]
+            },
+            english: {
+                beginner: [
+                    { text: "hello", translation: "こんにちは" },
+                    { text: "goodbye", translation: "さようなら" },
+                    { text: "thank you", translation: "ありがとう" },
+                    { text: "please", translation: "お願いします" },
+                    { text: "sorry", translation: "ごめんなさい" },
+                    { text: "yes", translation: "はい" },
+                    { text: "no", translation: "いいえ" },
+                    { text: "morning", translation: "朝" },
+                    { text: "afternoon", translation: "午後" },
+                    { text: "evening", translation: "夕方" },
+                    { text: "school", translation: "学校" },
+                    { text: "teacher", translation: "先生" },
+                    { text: "student", translation: "生徒" },
+                    { text: "friend", translation: "友達" },
+                    { text: "book", translation: "本" },
+                    { text: "pencil", translation: "鉛筆" },
+                    { text: "notebook", translation: "ノート" },
+                    { text: "desk", translation: "机" },
+                    { text: "chair", translation: "椅子" },
+                    { text: "window", translation: "窓" }
+                ],
+                intermediate: [
+                    { text: "My name is Taro.", translation: "私の名前は太郎です。" },
+                    { text: "I am twelve years old.", translation: "私は12歳です。" },
+                    { text: "I like soccer.", translation: "私はサッカーが好きです。" },
+                    { text: "I go to school by bus.", translation: "私はバスで学校に行きます。" },
+                    { text: "My favorite subject is English.", translation: "私の好きな科目は英語です。" },
+                    { text: "I have two brothers.", translation: "私には兄弟が2人います。" },
+                    { text: "I live in Tokyo.", translation: "私は東京に住んでいます。" },
+                    { text: "I eat breakfast at seven.", translation: "私は7時に朝食を食べます。" },
+                    { text: "What time is it now?", translation: "今何時ですか？" },
+                    { text: "It's three o'clock.", translation: "3時です。" },
+                    { text: "Today is Monday.", translation: "今日は月曜日です。" },
+                    { text: "Tomorrow is my birthday.", translation: "明日は私の誕生日です。" },
+                    { text: "I will go to the park.", translation: "私は公園に行くつもりです。" },
+                    { text: "I can play the piano.", translation: "私はピアノを弾くことができます。" },
+                    { text: "I can't swim very well.", translation: "私はあまり上手に泳げません。" },
+                    { text: "Do you like music?", translation: "音楽は好きですか？" },
+                    { text: "Yes, I do.", translation: "はい、好きです。" },
+                    { text: "No, I don't.", translation: "いいえ、好きではありません。" },
+                    { text: "I study every day.", translation: "私は毎日勉強します。" },
+                    { text: "I want to be a doctor.", translation: "私は医者になりたいです。" }
+                ],
+                advanced: [
+                    { text: "I have been to Kyoto three times.", translation: "私は京都に3回行ったことがあります。" },
+                    { text: "My sister is taller than me.", translation: "私の姉は私より背が高いです。" },
+                    { text: "He is the tallest boy in our class.", translation: "彼は私たちのクラスで一番背が高い男の子です。" },
+                    { text: "I will go to the movie theater this weekend.", translation: "今週末、私は映画館に行きます。" },
+                    { text: "I want to visit America someday.", translation: "いつか私はアメリカを訪れたいです。" },
+                    { text: "I have never seen snow before.", translation: "私は今まで雪を見たことがありません。" },
+                    { text: "What did you do last summer?", translation: "去年の夏、あなたは何をしましたか？" },
+                    { text: "I went to Okinawa with my family.", translation: "私は家族と沖縄に行きました。" },
+                    { text: "We enjoyed swimming in the ocean.", translation: "私たちは海で泳ぐのを楽しみました。" },
+                    { text: "I took many pictures of beautiful fish.", translation: "私は美しい魚の写真をたくさん撮りました。" },
+                    { text: "Have you ever tried making curry?", translation: "カレーを作ったことはありますか？" },
+                    { text: "I made curry with my mother yesterday.", translation: "昨日、私は母とカレーを作りました。" },
+                    { text: "It was very delicious.", translation: "それはとてもおいしかったです。" },
+                    { text: "I'm going to study more English.", translation: "私はもっと英語を勉強するつもりです。" },
+                    { text: "English is difficult but interesting.", translation: "英語は難しいですが、面白いです。" }
+                ],
+                expert: [
+                    { text: "I have been studying English for five years.", translation: "私は5年間英語を勉強しています。" },
+                    { text: "If it rains tomorrow, we will stay home.", translation: "もし明日雨が降れば、私たちは家にいるでしょう。" },
+                    { text: "I would like to go abroad to study English.", translation: "英語を勉強するために海外に行きたいです。" },
+                    { text: "The book I bought yesterday is very interesting.", translation: "昨日買った本はとても面白いです。" },
+                    { text: "My dream is to become a scientist in the future.", translation: "私の夢は将来科学者になることです。" },
+                    { text: "I think it's important to protect our environment.", translation: "環境を守ることは重要だと思います。" },
+                    { text: "We should reduce, reuse, and recycle to save the Earth.", translation: "地球を救うために、私たちは削減、再利用、リサイクルをすべきです。" },
+                    { text: "My hobby is playing basketball on weekends.", translation: "私の趣味は週末にバスケットボールをすることです。" },
+                    { text: "I have practiced every day since I was ten years old.", translation: "10歳の時から毎日練習しています。" },
+                    { text: "I hope to visit many countries when I grow up.", translation: "大人になったら多くの国を訪れたいと思います。" },
+                    { text: "What would you do if you could travel in time?", translation: "もし時間旅行ができたら、あなたは何をしますか？" },
+                    { text: "I would like to see what the future looks like.", translation: "未来がどのように見えるか見てみたいです。" },
+                    { text: "Technology is changing our lives very quickly.", translation: "テクノロジーは私たちの生活をとても速く変えています。" },
+                    { text: "I believe that learning English will help me in the future.", translation: "英語を学ぶことは将来役立つと信じています。" },
+                    { text: "I want to make friends from different countries.", translation: "いろいろな国から友達を作りたいです。" }
+                ]
+            }
+        };
+        
+        // ゲーム変数
+        let currentQuestion = 0;
+        let totalQuestions = 10;
+        let currentPhrase = "";
+        let currentTranslation = "";
+        let startTime = 0;
+        let endTime = 0;
+        let typingStats = {
+            accuracy: [],
+            speed: []
+        };
+        let selectedPhrases = [];
+        let currentMode = "japanese"; // デフォルトは日本語モード
+        
+        // DOM要素
+        const phraseDisplay = document.getElementById('phrase-display');
+        const typingInput = document.getElementById('typing-input');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const questionNumber = document.getElementById('question-number');
+        const remainingQuestions = document.getElementById('remaining-questions');
+        const currentLevel = document.getElementById('current-level');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const speedDisplay = document.getElementById('speed');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const finalAccuracy = document.getElementById('final-accuracy');
+        const finalSpeed = document.getElementById('final-speed');
+        const totalTime = document.getElementById('total-time');
+        const fireworksContainer = document.getElementById('fireworks-container');
+        
+        // ゲーム初期化
+        function initGame() {
+            currentQuestion = 0;
+            typingStats = {
+                accuracy: [],
+                speed: []
+            };
+            selectedPhrases = selectRandomPhrases();
+            
+            // UI更新
+            questionNumber.textContent = 1;
+            remainingQuestions.textContent = totalQuestions;
+            progressBar.style.width = '0%';
+            phraseDisplay.textContent = '準備ができたら「スタート」ボタンをクリックしてください';
+            document.getElementById('translation-display').textContent = '';
+            
+            gameScreen.style.display = 'block';
+            resultScreen.style.display = 'none';
+            
+            typingInput.value = '';
+            typingInput.disabled = true;
+            typingInput.classList.remove('correct', 'incorrect');
+            
+            startBtn.style.display = 'inline-block';
+            startBtn.textContent = 'スタート';
+            startBtn.disabled = false;
+            
+            document.getElementById('pass-btn').style.display = 'none';
+            
+            updateLevelDisplay(1);
+            
+            // モードに応じてタイトルを変更
+            if (currentMode === "japanese") {
+                document.querySelector('h1').textContent = 'タイピング練習アプリ - 日本語モード';
+            } else {
+                document.querySelector('h1').textContent = 'タイピング練習アプリ - 英語モード';
+            }
+        }
+        
+        // ランダムにフレーズを選択
+        function selectRandomPhrases() {
+            // 現在のモードに応じたフレーズを選択
+            if (currentMode === "japanese") {
+                // 各レベルからフレーズを選択（日本語モード）
+                const beginner = getRandomElements(typingPhrases.japanese.beginner, 3);
+                const intermediate = getRandomElements(typingPhrases.japanese.intermediate, 3);
+                const advanced = getRandomElements(typingPhrases.japanese.advanced, 2);
+                const expert = getRandomElements(typingPhrases.japanese.expert, 2);
+                
+                return [...beginner, ...intermediate, ...advanced, ...expert];
+            } else {
+                // 各レベルからフレーズを選択（英語モード）
+                const beginner = getRandomElements(typingPhrases.english.beginner, 3);
+                const intermediate = getRandomElements(typingPhrases.english.intermediate, 3);
+                const advanced = getRandomElements(typingPhrases.english.advanced, 2);
+                const expert = getRandomElements(typingPhrases.english.expert, 2);
+                
+                return [...beginner, ...intermediate, ...advanced, ...expert];
+            }
+        }
+        
+        // 配列からランダムに要素を選択
+        function getRandomElements(array, count) {
+            const shuffled = [...array].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+        
+        // レベル表示の更新
+        function updateLevelDisplay(questionNumber) {
+            if (questionNumber <= 3) {
+                currentLevel.textContent = '初級';
+            } else if (questionNumber <= 6) {
+                currentLevel.textContent = '中級';
+            } else if (questionNumber <= 8) {
+                currentLevel.textContent = '上級';
+            } else {
+                currentLevel.textContent = '最上級';
+            }
+        }
+        
+        // 次の問題を表示
+        function nextQuestion() {
+            if (currentQuestion >= totalQuestions) {
+                showResults();
+                return;
+            }
+            
+            // 現在のモードに応じて表示を変更
+            if (currentMode === "japanese") {
+                currentPhrase = selectedPhrases[currentQuestion];
+                phraseDisplay.textContent = currentPhrase;
+                document.getElementById('translation-display').textContent = "";
+            } else {
+                currentPhrase = selectedPhrases[currentQuestion].text;
+                currentTranslation = selectedPhrases[currentQuestion].translation;
+                phraseDisplay.textContent = currentPhrase;
+                document.getElementById('translation-display').textContent = `意味: ${currentTranslation}`;
+            }
+            
+            typingInput.value = '';
+            typingInput.disabled = false;
+            typingInput.focus();
+            
+            // パスボタンを表示
+            document.getElementById('pass-btn').style.display = 'block';
+            
+            startTime = new Date().getTime();
+            
+            // UI更新
+            questionNumber.textContent = currentQuestion + 1;
+            remainingQuestions.textContent = totalQuestions - currentQuestion;
+            progressBar.style.width = `${(currentQuestion / totalQuestions) * 100}%`;
+            
+            updateLevelDisplay(currentQuestion + 1);
+        }
+        
+        // 正確度の計算
+        function calculateAccuracy(original, typed) {
+            if (original.length === 0) return 100;
+            
+            let correctChars = 0;
+            const minLength = Math.min(original.length, typed.length);
+            
+            for (let i = 0; i < minLength; i++) {
+                if (original[i] === typed[i]) {
+                    correctChars++;
+                }
+            }
+            
+            return Math.round((correctChars / original.length) * 100);
+        }
+        
+        // 入力速度の計算（文字/分）
+        function calculateSpeed(textLength, timeInSeconds) {
+            return Math.round((textLength / timeInSeconds) * 60);
+        }
+        
+        // 花火アニメーション
+        function createFireworks() {
+            fireworksContainer.style.display = 'block';
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    createFirework();
+                }, i * 200);
+            }
+            
+            setTimeout(() => {
+                fireworksContainer.style.display = 'none';
+                fireworksContainer.innerHTML = '';
+            }, 7000);
+        }
+        
+        // 花火を作成
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            
+            // ランダムな位置と色
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight * 0.7;
+            const colors = ['#ff0', '#f0f', '#0ff', '#0f0', '#f00', '#00f'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            firework.style.left = `${x}px`;
+            firework.style.top = `${y}px`;
+            firework.style.backgroundColor = color;
+            firework.style.boxShadow = `0 0 10px 2px ${color}`;
+            
+            fireworksContainer.appendChild(firework);
+            
+            // パーティクル作成
+            createParticles(x, y, color);
+            
+            // 一定時間後に要素を削除
+            setTimeout(() => {
+                if (firework.parentNode === fireworksContainer) {
+                    fireworksContainer.removeChild(firework);
+                }
+            }, 1000);
+        }
+        
+        // 花火のパーティクルを作成
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework';
+                
+                // ランダムな方向と距離
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 100 + 50;
+                const particleX = x + Math.cos(angle) * distance;
+                const particleY = y + Math.sin(angle) * distance;
+                
+                particle.style.left = `${particleX}px`;
+                particle.style.top = `${particleY}px`;
+                particle.style.backgroundColor = color;
+                particle.style.boxShadow = `0 0 5px 1px ${color}`;
+                particle.style.width = '3px';
+                particle.style.height = '3px';
+                
+                fireworksContainer.appendChild(particle);
+                
+                // 一定時間後に要素を削除
+                setTimeout(() => {
+                    if (particle.parentNode === fireworksContainer) {
+                        fireworksContainer.removeChild(particle);
+                    }
+                }, 1000);
+            }
+        }
+        
+        // 結果画面を表示
+        function showResults() {
+            gameScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+            
+            // 統計の計算
+            const avgAccuracy = typingStats.accuracy.reduce((a, b) => a + b, 0) / typingStats.accuracy.length;
+            const avgSpeed = typingStats.speed.reduce((a, b) => a + b, 0) / typingStats.speed.length;
+            const timeInSeconds = (endTime - startTime) / 1000;
+            
+            // 結果の表示
+            finalAccuracy.textContent = `${Math.round(avgAccuracy)}%`;
+            finalSpeed.textContent = `${Math.round(avgSpeed)} 文字/分`;
+            totalTime.textContent = `${Math.round(timeInSeconds)}秒`;
+            
+            // 花火アニメーション
+            createFireworks();
+        }
+        
+        // ゲーム開始ボタンのイベントリスナー
+        startBtn.addEventListener('click', () => {
+            if (currentQuestion === 0) {
+                startBtn.style.display = 'none';
+                document.getElementById('pass-btn').style.display = 'block';
+                nextQuestion();
+            }
+        });
+        
+        // パスボタンのイベントリスナー
+        document.getElementById('pass-btn').addEventListener('click', () => {
+            // 現在の問題をスキップ
+            typingStats.accuracy.push(0); // 正確度は0%とする
+            typingStats.speed.push(0);    // 速度も0とする
+            
+            // 統計表示の更新
+            accuracyDisplay.textContent = `0%`;
+            speedDisplay.textContent = `0 文字/分`;
+            
+            // 次の問題へ
+            currentQuestion++;
+            nextQuestion();
+        });
+        
+        // タイピング入力のイベントリスナー
+        typingInput.addEventListener('input', () => {
+            const typed = typingInput.value;
+            
+            // 入力が完了したかチェック
+            if (typed === currentPhrase) {
+                typingInput.classList.add('correct');
+                typingInput.disabled = true;
+                
+                endTime = new Date().getTime();
+                const timeInSeconds = (endTime - startTime) / 1000;
+                
+                // 統計を記録
+                const accuracy = calculateAccuracy(currentPhrase, typed);
+                const speed = calculateSpeed(currentPhrase.length, timeInSeconds);
+                
+                typingStats.accuracy.push(accuracy);
+                typingStats.speed.push(speed);
+                
+                // 統計表示の更新
+                accuracyDisplay.textContent = `${accuracy}%`;
+                speedDisplay.textContent = `${speed} 文字/分`;
+                
+                // 次の問題へ
+                currentQuestion++;
+                
+                setTimeout(() => {
+                    typingInput.classList.remove('correct');
+                    nextQuestion();
+                }, 1000);
+            } else if (currentPhrase.startsWith(typed)) {
+                // 入力が正しい
+                typingInput.classList.remove('incorrect');
+            } else {
+                // 入力が間違っている
+                typingInput.classList.add('incorrect');
+            }
+        });
+        
+        // リスタートボタンのイベントリスナー
+        restartBtn.addEventListener('click', () => {
+            initGame();
+        });
+        
+        // モード切替ボタンのイベントリスナー
+        document.getElementById('japanese-mode').addEventListener('click', function() {
+            if (currentMode !== "japanese") {
+                currentMode = "japanese";
+                document.getElementById('japanese-mode').classList.add('mode-active');
+                document.getElementById('japanese-mode').style.backgroundColor = '#4dabf7';
+                document.getElementById('japanese-mode').style.color = 'white';
+                document.getElementById('english-mode').classList.remove('mode-active');
+                document.getElementById('english-mode').style.backgroundColor = '#e9ecef';
+                document.getElementById('english-mode').style.color = '#495057';
+                initGame();
+            }
+        });
+        
+        document.getElementById('english-mode').addEventListener('click', function() {
+            if (currentMode !== "english") {
+                currentMode = "english";
+                document.getElementById('english-mode').classList.add('mode-active');
+                document.getElementById('english-mode').style.backgroundColor = '#4dabf7';
+                document.getElementById('english-mode').style.color = 'white';
+                document.getElementById('japanese-mode').classList.remove('mode-active');
+                document.getElementById('japanese-mode').style.backgroundColor = '#e9ecef';
+                document.getElementById('japanese-mode').style.color = '#495057';
+                initGame();
+            }
+        });
+        
+        // ゲームの初期化
+        initGame();
+    </script>
+</body>
+</html>
