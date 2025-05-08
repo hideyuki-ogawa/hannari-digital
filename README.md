@@ -1,6 +1,9 @@
 # はんなりデジタル教室:プログラミング入門
 
+最初のタイピング練習アプリ: [https://hideyuki-ogawa.github.io/hannari-digital/typing/typing-practice-app](https://hideyuki-ogawa.github.io/hannari-digital/typing/typing-practice-app)
+
 ## 各コードのページURL
+
 ### programming-begins
 
 index1.html: [https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index1.html](https://hideyuki-ogawa.github.io/hannari-digital/programming-begins/index1.html)     
