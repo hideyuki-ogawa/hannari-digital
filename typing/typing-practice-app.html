@@ -230,6 +230,10 @@
             
             <div class="question-counter">問題 <span id="question-number">1</span> / 10</div>
             
+            <div id="timer-display" style="font-size: 18px; margin-bottom: 10px; color: #1c7ed6; font-weight: bold;">
+                経過時間: 00:00
+            </div>
+            
             <div class="phrase-display" id="phrase-display">
                 準備ができたら「スタート」ボタンをクリックしてください
             </div>
@@ -486,12 +490,15 @@
         let currentTranslation = "";
         let startTime = 0;
         let endTime = 0;
+        let totalStartTime = 0; // 10問全体の開始時間
+        let totalEndTime = 0;   // 10問全体の終了時間
         let typingStats = {
             accuracy: [],
             speed: []
         };
         let selectedPhrases = [];
         let currentMode = "japanese"; // デフォルトは日本語モード
+        let timerInterval = null; // タイマー用インターバル
         
         // DOM要素
         const phraseDisplay = document.getElementById('phrase-display');
@@ -510,6 +517,7 @@
         const finalSpeed = document.getElementById('final-speed');
         const totalTime = document.getElementById('total-time');
         const fireworksContainer = document.getElementById('fireworks-container');
+        const timerDisplay = document.getElementById('timer-display');
         
         // ゲーム初期化
         function initGame() {
@@ -519,6 +527,13 @@
                 speed: []
             };
             selectedPhrases = selectRandomPhrases();
+            
+            // タイマーをリセット
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerDisplay.textContent = '経過時間: 00:00';
             
             // UI更新
             questionNumber.textContent = 1;
@@ -548,6 +563,18 @@
             } else {
                 document.querySelector('h1').textContent = 'タイピング練習アプリ - 英語モード';
             }
+        }
+        
+        // タイマーを更新する関数
+        function updateTimer() {
+            const currentTime = new Date().getTime();
+            const elapsedTime = (currentTime - totalStartTime) / 1000; // 秒単位の経過時間
+            
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = Math.floor(elapsedTime % 60);
+            
+            // 時間表示を更新
+            timerDisplay.textContent = `経過時間: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
         
         // ランダムにフレーズを選択
@@ -594,6 +621,12 @@
         // 次の問題を表示
         function nextQuestion() {
             if (currentQuestion >= totalQuestions) {
+                // 全問題終了時にタイマーを停止し、結果を表示
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                totalEndTime = new Date().getTime(); // 終了時間を記録
                 showResults();
                 return;
             }
@@ -731,12 +764,16 @@
             // 統計の計算
             const avgAccuracy = typingStats.accuracy.reduce((a, b) => a + b, 0) / typingStats.accuracy.length;
             const avgSpeed = typingStats.speed.reduce((a, b) => a + b, 0) / typingStats.speed.length;
-            const timeInSeconds = (endTime - startTime) / 1000;
+            const totalTimeInSeconds = (totalEndTime - totalStartTime) / 1000; // 10問全体の秒数
             
             // 結果の表示
             finalAccuracy.textContent = `${Math.round(avgAccuracy)}%`;
             finalSpeed.textContent = `${Math.round(avgSpeed)} 文字/分`;
-            totalTime.textContent = `${Math.round(timeInSeconds)}秒`;
+            
+            // 合計時間を分:秒形式で表示
+            const minutes = Math.floor(totalTimeInSeconds / 60);
+            const seconds = Math.floor(totalTimeInSeconds % 60);
+            totalTime.textContent = `${minutes}分${seconds}秒`;
             
             // 花火アニメーション
             createFireworks();
@@ -745,6 +782,12 @@
         // ゲーム開始ボタンのイベントリスナー
         startBtn.addEventListener('click', () => {
             if (currentQuestion === 0) {
+                // ゲーム開始時に全体の開始時間を記録
+                totalStartTime = new Date().getTime();
+                
+                // タイマーをスタート
+                timerInterval = setInterval(updateTimer, 1000);
+                
                 startBtn.style.display = 'none';
                 document.getElementById('pass-btn').style.display = 'block';
                 nextQuestion();
