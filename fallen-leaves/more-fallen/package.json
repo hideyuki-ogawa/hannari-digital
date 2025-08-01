@@ -1,0 +1,54 @@
+{
+  "name": "fallen-leaves-movie-html",
+  "version": "1.0.0",
+  "description": "Beautiful falling leaves animation website",
+  "main": "index.html",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "serve": "python3 -m http.server 8080",
+    "serve:node": "npx serve .",
+    "lint": "eslint assets/js/**/*.js",
+    "lint:fix": "eslint assets/js/**/*.js --fix",
+    "test:e2e": "playwright test",
+    "test:visual": "jest tests/visual.test.js",
+    "test:all": "npm run test && npm run test:e2e"
+  },
+  "keywords": [
+    "animation",
+    "css",
+    "javascript",
+    "autumn",
+    "leaves",
+    "accessibility"
+  ],
+  "author": "Claude Code",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.40.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^30.0.5",
+    "jsdom": "^22.0.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ],
+    "collectCoverageFrom": [
+      "assets/js/**/*.js",
+      "!assets/js/**/*.min.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  }
+}

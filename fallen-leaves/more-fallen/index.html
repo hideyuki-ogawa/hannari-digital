@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>落ち葉が舞い散る - Fallen Leaves</title>
+    <meta name="description" content="美しく舞い散る落ち葉を表現したウェブサイト">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <main class="scene">
+        <header class="hero">
+            <h1 class="hero__title">落ち葉が舞い散る</h1>
+            <p class="hero__subtitle">自然の美しさを感じる瞬間</p>
+        </header>
+
+        <div class="leaves-container" aria-label="舞い散る落ち葉のアニメーション">
+            <div class="leaf"></div>
+            <div class="leaf"></div>
+            <div class="leaf"></div>
+            <div class="leaf"></div>
+            <div class="leaf"></div>
+            <div class="leaf"></div>
+        </div>
+
+        <section class="content">
+            <div class="content__inner">
+                <h2>秋の詩</h2>
+                <p>風に舞う落ち葉は、季節の移ろいを静かに物語る。<br>
+                   黄金色に輝く瞬間を、心に刻んで。</p>
+            </div>
+        </section>
+
+        <!-- アクセシビリティ用の制御 -->
+        <div class="animation-controls" role="region" aria-label="アニメーション制御">
+            <button class="pause-btn" type="button" aria-label="アニメーションを一時停止">
+                <span class="pause-btn__icon">⏸</span>
+                <span class="pause-btn__text">一時停止</span>
+            </button>
+        </div>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
