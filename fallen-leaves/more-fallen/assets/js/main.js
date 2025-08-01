@@ -190,16 +190,20 @@ class FallenLeavesController {
                 x: actualX,
                 y: -50 - Math.random() * 100, // Start off-screen
                 rotation: Math.random() * 360,
-                rotationSpeed: (Math.random() - 0.5) * 1, // Gentler rotation
-                scale: 0.8 + Math.random() * 0.4,
-                mass: 0.5 + Math.random() * 0.5,
+                rotationSpeed: (Math.random() - 0.5) * 1.2, // More varied rotation
+                scale: 0.7 + Math.random() * 0.6, // More size variety
+                mass: 0.4 + Math.random() * 0.8, // Wider mass range affects motion
                 originalX: actualX,
-                baseSwayAmplitude: 25 + Math.random() * 15, // Moderate sway
-                baseFallSpeed: 0.8 + Math.random() * 0.6, // Consistent gentle fall
-                personalityX: (Math.random() - 0.5) * 0.2, // Subtle personality
-                personalityRotation: (Math.random() - 0.5) * 0.8,
+                baseSwayAmplitude: 20 + Math.random() * 25, // More varied sway amplitude
+                baseFallSpeed: 0.6 + Math.random() * 0.8, // More varied fall speeds
+                personalityX: (Math.random() - 0.5) * 0.4, // Stronger horizontal personality
+                personalityRotation: (Math.random() - 0.5) * 1.2, // More rotation personality
                 phase: Math.random() * Math.PI * 2, // For sine wave motion
-                cycleOffset: Math.random() * 3000 // Stagger natural cycles
+                cycleOffset: Math.random() * 3000, // Stagger natural cycles
+                // Enhanced personality traits
+                swayPersonality: 0.5 + Math.random() * 1.0, // How much each leaf sways
+                fallPersonality: 0.7 + Math.random() * 0.6, // Falling behavior modifier
+                turbulenceResistance: Math.random(), // How much air turbulence affects this leaf
             };
             
             console.log(`Leaf ${index} initialized at x=${actualX.toFixed(1)}, starting y=${leaf.y}`);
@@ -315,15 +319,26 @@ class FallenLeavesController {
         const avoidanceRadius = 80; // Inner radius for stronger avoidance
         
         this.leaves.forEach((leaf, index) => {
-            // Simple, graceful falling motion with gentle sway
-            const swayTime = time * 0.5 + leaf.phase; // Slower sway frequency
-            const naturalSway = Math.sin(swayTime) * 0.8; // Gentle left-right motion
+            // Enhanced natural motion with multiple wave frequencies
+            const swayTime = time * 0.5 + leaf.phase;
+            const secondarySwayTime = time * 0.3 + leaf.phase * 1.7; // Different frequency
+            const tertiarySwayTime = time * 0.8 + leaf.phase * 0.6; // Third harmonic
             
-            // Consistent downward motion (primary movement)
-            leaf.y += leaf.baseFallSpeed;
+            // Combine multiple sine waves for complex, natural movement with personality
+            const primarySway = Math.sin(swayTime) * 0.8 * leaf.swayPersonality;
+            const secondaryWave = Math.sin(secondarySwayTime) * 0.4 * leaf.swayPersonality;
+            const tertiaryWave = Math.sin(tertiarySwayTime) * 0.2 * leaf.swayPersonality;
+            const naturalSway = primarySway + secondaryWave + tertiaryWave;
             
-            // Base horizontal position with natural sway
-            let targetX = leaf.originalX + naturalSway * leaf.baseSwayAmplitude + leaf.personalityX * 30;
+            // Add vertical oscillation for more natural falling (wind resistance effect)
+            const verticalWave = Math.sin(time * 0.7 + leaf.phase * 2) * 0.3 * leaf.fallPersonality;
+            const turbulenceEffect = Math.sin(time * 1.5 + leaf.phase * 4) * 0.1 * leaf.turbulenceResistance;
+            const fallSpeed = leaf.baseFallSpeed * (1 + verticalWave + turbulenceEffect) * leaf.fallPersonality;
+            
+            leaf.y += fallSpeed;
+            
+            // Base horizontal position with enhanced natural sway and personality
+            let targetX = leaf.originalX + naturalSway * leaf.baseSwayAmplitude + leaf.personalityX * 50;
             let avoidanceVelocityX = 0;
             let avoidanceVelocityY = 0;
             
@@ -398,9 +413,14 @@ class FallenLeavesController {
             leaf.momentum.x *= 0.85; // Momentum decay
             leaf.momentum.y *= 0.9;
             
-            // Gentle rotation with mouse influence
-            leaf.rotation += leaf.rotationSpeed * 0.5;
-            leaf.rotationSpeed *= 0.94; // Faster decay to settle rotation
+            // Enhanced natural rotation with air resistance simulation and personality
+            const rotationWave = Math.sin(time * 0.6 + leaf.phase * 3) * 0.3 * leaf.personalityRotation;
+            const airResistance = Math.sin(time * 1.2 + leaf.phase * 0.8) * 0.15 * leaf.turbulenceResistance;
+            
+            // Natural rotation varies based on falling speed, air currents, and leaf personality
+            const naturalRotationSpeed = leaf.rotationSpeed + rotationWave + airResistance;
+            leaf.rotation += naturalRotationSpeed * 0.7 * leaf.personalityRotation;
+            leaf.rotationSpeed *= (0.92 + leaf.turbulenceResistance * 0.03); // Personality affects decay rate
             
             // Boundary checks
             if (leaf.y > window.innerHeight + 100) {
@@ -443,10 +463,14 @@ class FallenLeavesController {
         leaf.y = -50 - Math.random() * 100;
         leaf.x = leaf.originalX; // Reset to original horizontal position
         leaf.rotation = Math.random() * 360;
-        leaf.rotationSpeed = (Math.random() - 0.5) * 1; // Gentler rotation
+        leaf.rotationSpeed = (Math.random() - 0.5) * 1.2;
         leaf.phase = Math.random() * Math.PI * 2;
-        leaf.baseFallSpeed = 0.8 + Math.random() * 0.7; // Ensure fall speed is set
-        leaf.momentum = { x: 0, y: 0 }; // Reset momentum
+        leaf.baseFallSpeed = 0.6 + Math.random() * 0.8;
+        leaf.momentum = { x: 0, y: 0 };
+        // Reset personality traits
+        leaf.swayPersonality = 0.5 + Math.random() * 1.0;
+        leaf.fallPersonality = 0.7 + Math.random() * 0.6;
+        leaf.turbulenceResistance = Math.random();
     }
 
     // Remove a specific leaf from the system
@@ -664,17 +688,21 @@ class FallenLeavesController {
             y: startY,
             rotation: Math.random() * 360,
             rotationSpeed: (Math.random() - 0.5) * 1, // Gentler rotation
-            scale: 0.8 + Math.random() * 0.4,
-            mass: 0.5 + Math.random() * 0.5,
+            scale: 0.7 + Math.random() * 0.6,
+            mass: 0.4 + Math.random() * 0.8,
             originalX: startX,
-            baseSwayAmplitude: 20 + Math.random() * 15, // Reduced sway
-            baseFallSpeed: 0.8 + Math.random() * 0.6, // Consistent fall speed
+            baseSwayAmplitude: 20 + Math.random() * 25,
+            baseFallSpeed: 0.6 + Math.random() * 0.8,
             isDynamic: true,
             createdAt: Date.now(),
-            personalityX: (Math.random() - 0.5) * 0.2, // Reduced personality drift
-            personalityRotation: (Math.random() - 0.5) * 0.8,
+            personalityX: (Math.random() - 0.5) * 0.4,
+            personalityRotation: (Math.random() - 0.5) * 1.2,
             phase: Math.random() * Math.PI * 2,
-            cycleOffset: Math.random() * 3000
+            cycleOffset: Math.random() * 3000,
+            // Enhanced personality traits for dynamic leaves
+            swayPersonality: 0.5 + Math.random() * 1.0,
+            fallPersonality: 0.7 + Math.random() * 0.6,
+            turbulenceResistance: Math.random()
         };
 
         this.leaves.push(newLeaf);
